@@ -10,7 +10,8 @@ class mainContent():
         return [''.join([str((self.contNum + x) % 10) for x in range(0, width)]) for y in range(0, height)]
 
     def dynamic(self):
-        return False
+        #return False
+        return self.contNum == 3
 
 def init(cell):
     cell.panel.content = mainContent(1)

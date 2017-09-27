@@ -33,6 +33,8 @@ class Panel():
             lline = lline[0:width] if len(lline) > width else lline
             cWin.addstr(y, x, lline[0:-2])
             cWin.addch(lline[-1])
+            # Delete the next character
+            cWin.delch(y, x + len(lline) - 1)
             # Then back up and insert the second to last character
             cWin.move(y, x + len(lline) - 2)
             cWin.insch(lline[-2])

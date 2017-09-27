@@ -27,10 +27,11 @@ class Clige():
 
     # initCallback(Cell) is called only once, and is intended for the initial setup. Cell contains a dummy Panel, containing an unimplemented Content.
     def startCurses(self, initCallback):
-        def main(cursesWindow):
+        def main(cWin):
             curses.curs_set(0)
-            cursesWindow.clear()
-            self.mainWindow = Window(cursesWindow, Cell(Panel(Content()), None), True)
+            self.cWin = cWin
+            cWin.clear()
+            self.mainWindow = Window(cWin, Cell(Panel(Content()), None), False)
             self.mainWindow.rootCell.window = self.mainWindow
             initCallback(self.mainWindow.rootCell)
             while not wantsStop:
