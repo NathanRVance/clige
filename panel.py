@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import logging
+import curses
 
 # Panels display content and keep track of focus
 class Panel():
@@ -11,6 +12,9 @@ class Panel():
         self.growDims = [growWidth, growHeight]
 
     def draw(self, pos, dim, window, forceDraw):
+        self.pos = pos
+        self.dim = dim
+        self.window = window
         if self.content.dynamic() or forceDraw:
             cWin = window.cWin
             [x, y] = pos
@@ -38,7 +42,7 @@ class Panel():
             # Then back up and insert the second to last character
             cWin.move(y, x + len(lline) - 2)
             cWin.insch(lline[-2])
-            if self.bordered:
+            if self.bordered and forceDraw:
                 # refresh local variables
                 [x, y] = pos
                 [width, height] = dim
@@ -48,3 +52,37 @@ class Panel():
                 if bottomBorder:
                     cWin.addstr(y + height - 1, x, '+' * (width))
             cWin.noutrefresh()
+
+    def setBorderBold(self, borders):
+        if borders:
+            attribute = curses.A_BOLD
+        else:
+            attribute = curses.A_NORMAL
+        # Borders (if they exist) are at pos - 1, and pos + dim - 1.
+        # For now, assume that borders exist
+        cWin = self.window.cWin
+        top = self.pos[1] - 1
+        bot = self.pos[1] + self.dim[1]
+        left = self.pos[0] - 1
+        right = self.pos[0] + self.dim[0]
+        winHeight = self.window.height()
+        winWidth = self.window.width()
+        if right < winWidth - 1:
+            right -= 1
+        if bot < winHeight - 1:
+            bot -= 1
+        # First, do top and bottom borders
+        if top >= 0:
+            cWin.chgat(top, left + 1, right - left - 1, attribute)
+        if bot < winHeight:
+            cWin.chgat(bot, left + 1, right - left - 1, attribute)
+        # Then, traverse the sides:
+        if top < 0:
+            top = 0
+        if bot + 1 > winHeight:
+            bot = winHeight - 1
+        for y in range(top, bot + 1):
+            if left >= 0:
+                cWin.chgat(y, left, 1, attribute)
+            if right < winWidth:
+                cWin.chgat(y, right, 1, attribute)

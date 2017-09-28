@@ -17,6 +17,7 @@ class Cell():
         # These record actual dimensions
         self.pos = [0, 0]
         self.dims = [0, 0]
+        self.hasFocus = False
 
     def split(self, panel, isHorizontal = True, newIsRightOrDown = True):
         self.window.dirty = True
@@ -25,10 +26,13 @@ class Cell():
         thisCell = Cell(self.panel, self.window)
         self.minDims = [0, 0]
         self.growDims = [False, False]
+        self.panel = None
         if newIsRightOrDown:
             self.children = [thisCell, newCell]
         else:
             self.children = [newCell, thisCell]
+        # Pass focus down to eldest child
+        self.children[0].hasFocus = self.hasFocus
         return self.children
 
     def calcMinDimsRecurse(self):
@@ -103,10 +107,39 @@ class Cell():
             for child in self.children:
                 child.draw(forceDraw)
 
+    # Returns True if result is that this cell is focused
+    def focus(self):
+        # If this is a leaf node, then toggle focus
+        if self.panel:
+            self.hasFocus = not self.hasFocus
+        # If not focused, then focus both me and my first child
+        elif not self.hasFocus:
+            self.hasFocus = True
+            self.children[0].focus()
+        # If focused and first child is focused and first child unfocuses, then focus second child
+        elif self.children[0].hasFocus and not self.children[0].focus():
+            self.children[1].focus()
+        # Same as above, but second child rejects focus, then unfocus
+        elif self.children[1].hasFocus and not self.children[1].focus():
+            self.hasFocus = False
+        return self.hasFocus
+
+    # Return focused panel
+    def getFocus(self):
+        if not self.hasFocus:
+            return None
+        elif self.panel:
+            return self.panel
+        else:
+            for child in self.children:
+                if child.hasFocus:
+                    return child.getFocus()
+
 class Window():
     def __init__(self, cWin, rootCell, bordered = True):
         self.cWin = cWin
         self.rootCell = rootCell
+        self.rotateFocus()
         self.bordered = bordered
         self.dirty = True
 
@@ -140,4 +173,16 @@ class Window():
                 self.cWin.addch(row, 0, '#')
                 self.cWin.addch(row, self.width() - 1, '#')
             self.cWin.noutrefresh()
+        self.getFocus().setBorderBold(True)
         self.dirty = False
+
+    def rotateFocus(self):
+        focused = self.getFocus()
+        if focused:
+            focused.setBorderBold(False)
+        if not self.rootCell.focus():
+            self.rootCell.focus()
+
+    # Get focused panel
+    def getFocus(self):
+        return self.rootCell.getFocus()

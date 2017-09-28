@@ -27,6 +27,6 @@ def refresh(topWindow):
         clige.spawnWindow(30, 30, mainContent(4))
 
 def keyPress(key):
-    logging.debug('Key {} pressed'.format(key))
+    logging.debug('Key {} pressed ({})'.format(key, ord(key)))
 
 clige.startCurses(init, mainContent(1), refresh, keyPress)
