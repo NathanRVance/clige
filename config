@@ -1,0 +1,5 @@
+[DEFAULT]
+logfile = clige.log
+
+[keys]
+switch_focus = TAB
