@@ -30,5 +30,5 @@ def refresh(topWindow):
         cell = clige.spawnWindow(30, 30, mainContent(4))
         cell.split(Panel(mainContent(5), False, False))
 
-
+clige.loadConfig('config')
 clige.startCurses(init, mainContent(1), refresh)
