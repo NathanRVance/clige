@@ -1,4 +1,4 @@
-[DEFAULT]
+[clige]
 logfile = clige.log
 
 [keys]

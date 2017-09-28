@@ -12,7 +12,10 @@ class mainContent():
 
     def dynamic(self):
         #return False
-        return self.contNum == 3
+        return self.contNum == 3 or self.contNum == 5
+
+    def keyPress(self, key):
+        logging.debug('Key {} pressed ({})'.format(key, key))
 
 def init(cell):
     [cell1, cell2] = cell.split(Panel(mainContent(2)), True, False)
@@ -24,9 +27,8 @@ def refresh(topWindow):
     global hasRefreshed
     if not hasRefreshed:
         hasRefreshed = True
-        clige.spawnWindow(30, 30, mainContent(4))
+        cell = clige.spawnWindow(30, 30, mainContent(4))
+        cell.split(Panel(mainContent(5), False, False))
 
-def keyPress(key):
-    logging.debug('Key {} pressed ({})'.format(key, ord(key)))
 
-clige.startCurses(init, mainContent(1), refresh, keyPress)
+clige.startCurses(init, mainContent(1), refresh)
