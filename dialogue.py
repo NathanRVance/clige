@@ -7,7 +7,7 @@ class exitDialogue():
         clige.spawnWindow(30, 6, self)
 
     def getContent(self, width, height):
-        return util.centerVert(util.centerHoriz('Are you sure you want to quit? [y/n]', width, height), width, height)
+        return util.centerVert(util.centerHoriz(r'Are you sure you want to <b>quit</b>? [y/n] or other', width, height), width, height)
 
     def dynamic(self):
         return False

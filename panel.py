@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logging
 import curses
+import util
 
 # Panels display content and keep track of focus
 class Panel():
@@ -30,10 +31,12 @@ class Panel():
                     bottomBorder = True
             content = self.content.getContent(width, height)
             for line in content[:-1]:
+                line = util.removeTags(line)
                 cWin.addstr(y, x, line[0:width] if len(line) > width else line)
                 y += 1
             # Because curses is dumb, last line must be handled differently. First, print all but the second to last character:
             lline = content[-1]
+            lline = util.removeTags(lline)
             lline = lline[0:width] if len(lline) > width else lline
             cWin.addstr(y, x, lline[0:-2])
             cWin.addch(lline[-1])
