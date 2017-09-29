@@ -1,18 +1,56 @@
 #!/usr/bin/env python3
 import logging
 import re
-tags = re.compile(r'((?<=[^\\])|^)<.*?(?=[^\\])>')
+import curses
+tags = re.compile(r'((?<=[^\\])|^)<(.*?[^\\])>')
 # This file contians utility functions for clige
 
 def removeTags(text):
     return tags.sub('', text)
 
+def resetTags():
+    global openTags
+    openTags = []
+
+cursesTags = {'b' : curses.A_BOLD, 'i' : curses.A_DIM, 'mark' : curses.A_STANDOUT, 'u' : curses.A_UNDERLINE}
+
 # Text is a single string containing tags, and the untagged version is aleady written at x, y
 # Note: This method assumes that unclosed tags from the previous invocation are still active.
-openTags = set()
 def applyTags(cWin, x, y, text):
-    global openTags[]
-    tags = 
+    global openTags
+    def applyFormat(x, y, number):
+        global openTags
+        for tag in openTags:
+            if tag in cursesTags:
+                fmat = cursesTags[tag]
+            else:
+                fmat = curses.A_BLINK # The penalty for improper tagging is blinking text
+            cWin.chgat(y, x, number, fmat)
+    def isOpen(tag):
+        return tag[1] != '/'
+    def tagContent(tag):
+        if isOpen(tag):
+            return tag[1:-1]
+        else:
+            return tag[2:-1]
+    
+    offset = 0
+    while True:
+        match = tags.search(text)
+        if not match:
+            break
+        text = tags.sub('', text, count=1)
+        tag = match.group()
+        content = tagContent(tag)
+        start = match.start()
+        applyFormat(x + offset, y, start - offset)
+        if isOpen(tag) and content not in openTags:
+            openTags.append(content)
+        elif not isOpen(tag) and content in openTags:
+            openTags.remove(content)
+        offset = start
+    # Finally, apply any open tags to the end of the line
+    applyFormat(x + offset, y, len(text) - offset)
 
 # Attepts to cram text into an array of <= height strings, each <= width long
 # If it doesn't fit, text is truncated so that it does.
