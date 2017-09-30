@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import curses
-from window import Window
-from window import Cell
-from panel import Panel
+from clige import window
+from clige import panel
+from clige import dialogue
 import logging
 import configparser
 import os
@@ -49,7 +49,7 @@ def startCurses(initCallback, initContent, refreshMethod):
         curses.curs_set(0)
         cWin.clear()
         cWin.timeout(25)
-        windowStack.append(Window(cWin, Cell(Panel(initContent), None), False))
+        windowStack.append(window.Window(cWin, window.Cell(panel.Panel(initContent), None), False))
         windowStack[0].rootCell.window = windowStack[0]
         initCallback(windowStack[0].rootCell)
         while not wantsStop:
@@ -97,7 +97,6 @@ def height():
 
 def closeWindow():
     if len(windowStack) == 1:
-        import dialogue
         dialogue.exitDialogue()
     else:
         del windowStack[-1]
@@ -111,6 +110,6 @@ def spawnWindow(winWidth, winHeight, content):
         winHeight = height()
     newCWin = curses.newwin(winHeight, winWidth, int((height() - winHeight) / 2), int((width() - winWidth) / 2))
     newCWin.timeout(25)
-    windowStack.append(Window(newCWin, Cell(Panel(content), None), True))
+    windowStack.append(window.Window(newCWin, window.Cell(panel.Panel(content), None), True))
     windowStack[-1].rootCell.window = windowStack[-1]
     return windowStack[-1].rootCell

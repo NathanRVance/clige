@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import logging
 import curses
-import util
+from clige import util
 
 # Panels display content and keep track of focus
 class Panel():

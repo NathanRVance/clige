@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import panel
+from clige import panel
 import logging
 
 # Windows display panels, which are organized in a table
@@ -19,9 +19,9 @@ class Cell():
         self.dims = [0, 0]
         self.hasFocus = False
 
-    def split(self, panel, isHorizontal = True, newIsRightOrDown = True):
+    def split(self, content, minWidth = 0, minHeight = 0, growWidth = True, growHeight = True, isHorizontal = True, newIsRightOrDown = True):
         self.window.dirty = True
-        newCell = Cell(panel, self.window)
+        newCell = Cell(panel.Panel(content, minWidth=minWidth, minHeight=minHeight, growWidth=growWidth, growHeight=growHeight), self.window)
         self.horizontal = isHorizontal
         thisCell = Cell(self.panel, self.window)
         self.minDims = [0, 0]

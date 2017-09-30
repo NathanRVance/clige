@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import util
-import clige
+from clige import util
+from clige import clige
 
 class exitDialogue():
     def __init__(self):
@@ -8,7 +8,7 @@ class exitDialogue():
         util.defColor('rb', 'red', 'green')
 
     def getContent(self, width, height):
-        return util.centerVert(util.centerHoriz(r'Are <i>you</i> <rb>su<b>re y</b>ou w<u>ant to <mark>qui</rb>t</mark>? [y/</u>n] or other', width, height), width, height)
+        return util.centerVert(util.centerHoriz(r'Are you sure you want to quit? [y/n]', width, height), width, height)
 
     def dynamic(self):
         return False
