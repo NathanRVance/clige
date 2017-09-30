@@ -14,18 +14,34 @@ def resetTags():
 
 cursesTags = {'b' : curses.A_BOLD, 'i' : curses.A_DIM, 'mark' : curses.A_STANDOUT, 'u' : curses.A_UNDERLINE}
 
+basicColors = {'black' : curses.COLOR_BLACK, 'red' : curses.COLOR_RED, 'green' : curses.COLOR_GREEN, 'yellow' : curses.COLOR_YELLOW, 'blue' : curses.COLOR_BLUE, 'magenta' : curses.COLOR_MAGENTA, 'cyan' : curses.COLOR_CYAN, 'white' : curses.COLOR_WHITE}
+
+# name is the name used in tags, colorText and colorBack are the names of the colors for the text and the background. For example,
+# defColor('bruise', 'black', 'blue') defines black text on a blue background that is used with <bruise>Bruise</bruise> tags.
+def defColor(name, colorText, colorBack):
+    global colors
+    if not 'colors' in globals():
+        colors = {}
+    if not name in colors:
+        colors[name] = len(colors) + 1
+    curses.init_pair(colors[name], basicColors[colorText], basicColors[colorBack])
+
 # Text is a single string containing tags, and the untagged version is aleady written at x, y
 # Note: This method assumes that unclosed tags from the previous invocation are still active.
 def applyTags(cWin, x, y, text):
     global openTags
+    global colors
     def applyFormat(x, y, number):
         global openTags
+        fmat = 0
         for tag in openTags:
             if tag in cursesTags:
-                fmat = cursesTags[tag]
+                fmat |= cursesTags[tag]
+            elif tag in colors:
+                fmat |= curses.color_pair(colors[tag])
             else:
-                fmat = curses.A_BLINK # The penalty for improper tagging is blinking text
-            cWin.chgat(y, x, number, fmat)
+                fmat |= curses.A_BLINK # The penalty for improper tagging is blinking text
+        cWin.chgat(y, x, number, fmat)
     def isOpen(tag):
         return tag[1] != '/'
     def tagContent(tag):

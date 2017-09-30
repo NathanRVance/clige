@@ -42,6 +42,7 @@ def startCurses(initCallback, initContent, refreshMethod):
     global windowStack
     windowStack = []
     def main(cWin):
+        curses.start_color()
         global forceDraw
         global wantsStop
         forceDraw, wantsStop = False, False
